@@ -18,8 +18,13 @@ Textures (Poly Haven, CC0 1.0 - https://polyhaven.com/license)
 Fonts
   Cinzel and Cinzel Decorative by Natanael Gama - SIL Open Font License 1.1
 
+Modelled in Blender for this project (original; textures are the CC0 Poly Haven
+  sets above, resized and graded): timbers, planks, rails, sleepers, mine cart,
+  Davy lamp, torch, pickaxe, mallet, lift cage and gate, rock set with baked
+  normal/AO atlas. Script: source/blender/build_props.py
+
 Generated in-game (original, no third-party assets)
-  Cave terrain, timbers, rails, cart, lift, lamps, torches, tools, helmets,
+  Cave terrain, helmets, torch brackets and stands, flare,
   flames, smoke, dust, gas and shadow creatures are procedural geometry and shaders.
   All audio is synthesized at runtime with WebAudio.
   Toolbar icons are rendered at load time from the game's own 3D props.

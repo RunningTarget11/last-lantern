@@ -11,7 +11,7 @@ const res=await page.evaluate(({steps,T,extra,viewH})=>{const {G}=__LL;const s=G
   const ex=extra?eval(extra):null;
   while(!s.over&&s.t<T){const st=st2[k];if(st){let go=false;if(st.at!=null)go=s.t>=st.at;else if(st.when)go=st.when(s);else if(st.after!=null)go=s.t>=lastT+st.after;if(go){st.do(s);k++;lastT=s.t;}}
     if(ex)ex(s,G);s.tick();G.world.handle(s.drainEvents());if(((s.t*60)|0)%6===0)G.world.update(0.1,G.t,null);}
-  G.lastPan=-99;const fm=s.foreman;G.tcx=G.camX=fm.x;G.tcy=G.camY=fm.y+1;if(viewH){G.viewH=+viewH;G.tcx=G.camX=+(viewH.split(',')[1]||fm.x);}
+  G.lastPan=-99;const fm=s.foreman;G.tcx=G.camX=fm.x;G.tcy=G.camY=fm.y+1;if(viewH){G.viewH=+viewH.split(',')[0];G.tcx=G.camX=+(viewH.split(',')[1]||fm.x);}
   return {t:s.t,over:s.over,saved:s.saved,lost:s.lost};},{steps,T:+T,extra,viewH});
 console.log(JSON.stringify(res));
 await page.waitForTimeout(res.over?4500:2500);await page.screenshot({path:out+'.jpg',quality:86});

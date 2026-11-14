@@ -1,4 +1,4 @@
-LAST LANTERN - prototype (build 1)
+LAST LANTERN - prototype (build 2: Blender asset pass)
 ==================================
 A dark, Lemmings-style rescue game for mobile browsers and desktop.
 The mine has fallen. Trapped miners walk on their own. They follow light,
@@ -39,3 +39,18 @@ SOURCE
   source/ holds the unbundled modules (sim, renderer, levels), the build scripts
   and the headless tests. Rebuild with source/build.sh (needs three, esbuild).
   tests/solve.mjs plays scripted solutions for all five levels in Node.
+
+BLENDER ASSETS (build 2)
+  source/blender/build_props.py is a headless Blender 5.3 script (CPU/Cycles):
+    /opt/blender/blender -b --factory-startup -P source/blender/build_props.py
+  It models the mine props, bakes ambient occlusion into vertex colours, bakes a
+  high-poly -> low-poly normal map plus albedo*AO atlas for the rocks, and exports
+  one optimized GLB (ll_props.glb, ~24k triangles total, 512px textures, ~1.5 MB).
+  The game loads it from assets.js. If it's missing, the procedural fallbacks are used.
+  From Blender: timber posts and caps, lagging planks, rails (real flat-bottom
+  profile), sleepers with spikes, riveted mine cart with spoked flanged wheels and an
+  ore load, Davy lamp (brass, glass, wire gauze), tar-rag torch, pickaxe, mallet,
+  exit lift cage with sheave and gate, and 3 sculpted rock variants (rubble and
+  floor scatter).
+  Still procedural in three.js: cave terrain, torch brackets and stands, flare,
+  flames, smoke, gas and creatures.

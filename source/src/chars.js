@@ -3,11 +3,12 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import {patchLM} from './lm.js';
-import {MAT,makeDavyLamp,makePickaxe,makeMallet,makeFlareProp} from './props.js';
+import {MAT,makeDavyLamp,makePickaxe,makeMallet,makeFlareProp,setBlenderProps} from './props.js';
 export const MODELS={},CLIPS={};
 function b64(s){const bin=atob(s);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer;}
 export async function loadModels(A){const L=new GLTFLoader();const parse=k=>new Promise((res,rej)=>L.parse(b64(A.glb[k]),'',res,rej));
   for(const k of ['ch_peasant_lo','ch_head_lo','ch_ranger_lo']){MODELS[k]=await parse(k);const b=new THREE.Box3().setFromObject(MODELS[k].scene);MODELS[k].h=b.max.y-b.min.y;}
+  if(A.glb.ll_props){const g=await parse('ll_props');setBlenderProps(g.scene);}
   for(const k of ['wine_barrel_01','wooden_crate_01']){MODELS[k]=await parse(k);MODELS[k].scene.traverse(o=>{if(o.isMesh){o.material=patchLM(o.material.clone());o.material.envMapIntensity=0.3;o.castShadow=true;}});const b=new THREE.Box3().setFromObject(MODELS[k].scene);MODELS[k].size=b.getSize(new THREE.Vector3());MODELS[k].min=b.min.clone();}
   const an=await parse('ll_anims');for(const c of an.animations)CLIPS[c.name]=c;
   // foreman walk: legs/torso from Walk_Loop, lantern arm held from Idle_Lantern_Loop

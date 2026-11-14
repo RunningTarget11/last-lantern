@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {CELL} from './sim.js';
 import {TerrainView} from './terrain.js';
 import {LightField,LMU} from './lm.js';
-import {MAT,timberSet,makeTorchProp,torchBracket,torchStand,makeDavyLamp,makeFlareProp,makeLift,makeRailRun,makeCart,rubbleHeap,makeHalo,updatePropTime} from './props.js';
+import {MAT,timberSet,makeTorchProp,torchBracket,torchStand,makeDavyLamp,makeFlareProp,makeLift,makeRailRun,makeCart,rubbleHeap,makeHalo,updatePropTime,BP,bpInstanced} from './props.js';
 import {Particles,makeAtmosphere,makeGas,makeCreature} from './fx.js';
 import {makeChar,play,propFor,MODELS} from './chars.js';
 import {sfx,setWhisper} from './audio.js';
@@ -43,7 +43,10 @@ export class World{
         if(r<0.12)prop('wooden_crate_01',x,f0.y,-1.25,0.75,rnd()*0.6);else if(r<0.2){prop('wine_barrel_01',x,f0.y,-1.3,0.8,rnd()*3);}
         else if(r<0.25){prop('wooden_crate_01',x,f0.y,-1.3,0.75,0.2);prop('wooden_crate_01',x+0.1,f0.y+0.72,-1.3,0.62,0.9);}
         for(let k=0;k<3;k++){const zb=rnd()<0.8?-1.0-rnd()*0.7:-0.75+rnd()*0.2;rocks.push([x+(rnd()-0.5)*1.4,f0.y,zb,0.06+rnd()*0.16]);}}}
-    if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),MAT.rubble,rocks.length);const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler();
+    if(rocks.length&&BP.LL_RockA){const q=new THREE.Quaternion(),e=new THREE.Euler();const sets=[[],[],[]];
+      rocks.forEach((r,i)=>{e.set(rnd()*0.5,rnd()*6.28,rnd()*0.5);q.setFromEuler(e);sets[i%3].push(new THREE.Matrix4().compose(new THREE.Vector3(r[0],r[1]+r[3]*0.25,r[2]),q,new THREE.Vector3(r[3]*1.1,r[3]*1.0,r[3]*1.1)));});
+      sets.forEach((ms,k)=>{if(ms.length)R.add(bpInstanced('LL_Rock'+'ABC'[k],ms));});}
+    else if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),MAT.rubble,rocks.length);const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler();
       rocks.forEach((r,i)=>{e.set(rnd()*3,rnd()*3,rnd()*3);q.setFromEuler(e);m4.compose(new THREE.Vector3(r[0],r[1]+r[3]*0.4,r[2]),q,new THREE.Vector3(r[3]*1.3,r[3]*0.8,r[3]));im.setMatrixAt(i,m4);});im.castShadow=true;R.add(im);}
     // entrance: a timbered side adit the crew stumbles out of
     {const e=s.entry;const g=new THREE.Group();const p1=timberSet(0,2.6,{front:false});p1.position.x=-0.8;const p2=timberSet(0,2.6,{front:false});p2.position.x=0.8;g.add(p1,p2);
