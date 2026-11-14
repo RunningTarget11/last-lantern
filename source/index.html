@@ -57,6 +57,42 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Cinze
 #mini{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));z-index:9;border-radius:3px;box-shadow:0 0 0 1px #000,0 0 0 2px #6e5128,0 4px 12px #000;background:#000;touch-action:none;cursor:pointer}
 @media (orientation:portrait){#barIn{flex-wrap:wrap;row-gap:8px}#skills{width:100%;justify-content:center}:root{--slot:min(52px,calc((100vw - 50px)/8.6))}#hud{flex-wrap:wrap;row-gap:2px;max-width:calc(100vw - 150px)}#hud .lv{display:none}#toast{top:calc(max(8px,env(safe-area-inset-top)) + 62px);font-size:12px}}
 @media (orientation:landscape) and (max-height:500px){:root{--slot:min(44px,calc((100vw - 80px)/16))}#bar{padding-top:4px}}
+
+/* ---------- classic Lemmings panel (build 4): status line, skill row, control cluster, minimap ---------- */
+:root{--slot:min(54px,calc((100vw - 460px)/15.4));--cb:min(40px,calc(var(--slot)*.74))}
+#hud{display:none!important}
+@media (pointer:fine){#cv{cursor:none}}
+#bar{padding:2px 8px calc(6px + env(safe-area-inset-bottom))}
+#status{display:flex;justify-content:center;align-items:baseline;gap:clamp(10px,2.6vw,30px);font:700 clamp(10px,1.35vw,13px)/1.6 Cinzel,serif;letter-spacing:.16em;color:#a99370;white-space:nowrap;padding:1px 0 5px;text-shadow:0 1px 2px #000;pointer-events:none}
+#status b{color:#f3e0b4}#status .sel{color:#ffd58a;min-width:9.5em;text-align:right}#status .low b{color:#ff6a4a}#status .md{color:#ff9a3c;min-width:7em}
+#barIn{display:flex;align-items:center;justify-content:center;gap:clamp(6px,1.1vw,14px)}
+#main{display:flex;align-items:center;gap:clamp(3px,.55vw,7px)}
+#cluster{display:grid;grid-template-columns:repeat(5,var(--cb));grid-auto-rows:var(--cb);gap:5px}
+#miniWrap{display:flex;align-items:center;justify-content:center}
+#mini{position:static;display:block;border-radius:3px;box-shadow:0 0 0 1px #000,0 0 0 2px #8a6532,0 0 0 3px #2a1b0a,inset 0 0 8px #000;background:#000;touch-action:none;cursor:pointer}
+.slot.sk .num{position:absolute;top:3%;left:0;right:0;text-align:center;font:700 calc(var(--slot)*.25)/1 Cinzel,serif;color:#ffe2a6;text-shadow:0 1px 2px #000,0 0 6px rgba(255,150,50,.35);pointer-events:none}
+.slot.sk img{inset:26% 8% 2% 8%;width:84%;height:72%}
+.slot.sk svg{inset:34% 26% 14% 26%;width:48%;height:52%}
+.slot.sk .lab{display:none}
+.slot.sk .key{left:auto;right:4px;top:auto;bottom:2px;font-size:7px;color:#7d6748}
+.slot.empty .num{color:#6d5c44}
+.slot.walker .num{font-size:calc(var(--slot)*.3)}
+.slot.walker{background:radial-gradient(circle at 50% 38%,#3a2b17 0%,#0d0b09 75%),var(--leather)}
+.slot.rr .num{color:#f1cf8a}
+.slot.cb{width:var(--cb);height:var(--cb);border-radius:6px}
+.slot.cb svg{inset:20%;width:60%;height:60%}
+.slot.cb .lab{display:none}
+.slot.cb.on,.slot.sk.ctl.on{box-shadow:inset 0 0 0 1px #000,inset 0 0 16px rgba(255,140,40,.5),0 0 0 2px #3a2610,0 0 0 3px #f1cf8a,0 0 0 4px #3a2610,0 0 12px 2px rgba(255,150,50,.5)}
+.slot.arm{animation:arm .4s infinite alternate}
+@media (min-width:1100px) and (min-height:640px){.slot.cb .lab{display:block;position:absolute;left:0;right:0;bottom:-13px;top:auto;transform:none;text-align:center;font-size:7px;color:#9c8a6c;opacity:1}#cluster{row-gap:16px;margin-bottom:12px}}
+@media (orientation:landscape) and (max-height:500px){:root{--slot:min(46px,calc((100vw - 360px)/15.3));--cb:min(36px,calc(var(--slot)*.82))}#status{padding-bottom:3px;font-size:10px}}
+@media (orientation:portrait){
+ :root{--slot:min(50px,calc((100vw - 46px)/8.5));--cb:min(44px,calc((100vw - 56px)/9.5))}
+ #barIn{flex-direction:column;gap:8px}
+ #main{flex-wrap:wrap;justify-content:center;row-gap:7px;width:calc(var(--slot)*8 + 7*clamp(3px,.55vw,7px) + 2px)}
+ #cluster{grid-template-columns:repeat(9,var(--cb))}
+ #status{gap:12px;font-size:10px;letter-spacing:.1em}#status .sel{min-width:7.5em}#status .md{display:none}#status .need{display:none}
+ #toast{top:max(10px,env(safe-area-inset-top))}}
 /* ---------- world labels ---------- */
 #toast{position:fixed;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 64px);transform:translateX(-50%);z-index:20;padding:7px 16px;font-size:13px;letter-spacing:.08em;color:var(--txt);
  background:var(--grit),linear-gradient(180deg,#2a2017,#0f0c09);box-shadow:0 0 0 1px #000,0 0 0 2px #7a5a2c,0 6px 16px #000;border-radius:4px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
@@ -114,19 +150,20 @@ p.hint{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d6c6a6;ma
 </defs></svg>
 <div id="game"><canvas id="cv"></canvas></div>
 <div id="hud" class="hidden"><span class="lv" id="hLv"></span><span>Out <b id="hOut">0</b></span><span class="in">In <b id="hIn">0</b><span id="hNeed"></span></span><span class="time" id="hTimeW">Time <b id="hTime">0:00</b></span><span class="sel" id="hSel"></span></div>
-<canvas id="mini" class="hidden"></canvas>
 <div id="toast"></div>
-<div id="bar" class="hidden"><div id="barIn"><div id="skills"></div><div class="sep" id="sep1"></div><div id="ctrls"></div></div></div>
+<div id="bar" class="hidden"><div id="status"><span class="sel" id="stSel"></span><span>OUT <b id="stOut">0</b></span><span>IN <b id="stIn">0%</b></span><span class="need">NEED <b id="stNeed">0%</b></span><span id="stTimeW">TIME <b id="stTime">0-00</b></span><span class="md" id="stMode"></span></div><div id="barIn"><div id="main"></div><div id="cluster"></div><div id="miniWrap"><canvas id="mini"></canvas></div></div></div>
 <div id="loading" class="screen"><h2>Last Lantern</h2><div class="sub" id="loadTxt">Lighting the lamps&hellip;</div><div class="bar"><span id="loadBar"></span></div></div>
 <div id="title" class="screen hidden"><h1>Last<br>Lantern</h1><div class="tag">The mine has fallen. Lead the miners home before the dark takes them.</div>
   <div><button class="btn" id="bPlay">Descend</button></div><div style="margin-top:6px"><button class="btn dark" id="bHow">How to Play</button><button class="btn dark" id="bSound">Sound: On</button></div>
-  <div class="foot">PROTOTYPE &middot; BUILD 3</div></div>
+  <div class="foot">PROTOTYPE &middot; BUILD 4</div></div>
 <div id="how" class="screen dim hidden"><div class="panel"><h2>How to Play</h2><div class="rule"></div><div class="help">
  Miners drop from the hatch and walk on their own. They turn at walls, fall off ledges, and a long fall kills them. Get enough of them into the <b>lift</b>.<br><br>
- <b>Tap a skill, then tap a miner.</b> The miner under your finger or cursor is ringed in brass.<br>
- <b>Climber</b> scales walls. <b>Floater</b> opens a canvas sack and survives any fall. <b>Blaster</b> sets a powder charge (5 s). <b>Blocker</b> turns the crowd (tap him again with Blocker to release him). <b>Builder</b> lays a timber stair. <b>Basher</b> tunnels sideways, <b>Miner</b> diagonally down, <b>Digger</b> straight down. Granite can't be broken.<br>
- <b>Lamp</b> gives a miner a Davy lamp. <b>Torch</b>: tap the ground to plant one. Unlit miners in a shadow seam are taken.<br><br>
- <b>Drag</b> to pan, <b>pinch</b> or <b>wheel</b> to zoom, or tap the map. Keys: 1&ndash;0 skills, &minus;/+ release rate, P pause, F fast-forward, N nuke (press twice), arrows pan.</div>
+ <b>Tap a skill, then tap a miner.</b> The miner under your finger or cursor is boxed; the status line names him (e.g. DIGGER 1).<br>
+ <b>Walk</b> (unlimited) sends any stopped or busy miner walking again &mdash; blockers, builders out of planks (they glow), bashers, miners, diggers &mdash; and turns a walker round. A Blocker can also be released by tapping him with Blocker.<br>
+ <b>Climber</b> scales walls. <b>Floater</b> opens a canvas sack. <b>Blaster</b> sets a 5 s charge. <b>Blocker</b> turns the crowd. <b>Builder</b> lays 12 planks. <b>Basher</b> tunnels sideways, <b>Miner</b> diagonally, <b>Digger</b> straight down. Steel plate can't be broken. <b>Lamp</b> and <b>Torch</b> keep the shadows off.<br><br>
+ <b>Panel:</b> release rate &minus;/+ (minimum / current), skills, pause, nuke (twice), fast, slow, frame back/forward, left-only / walkers-only / right-only selection, retry (twice), menu, and the map (tap or drag).<br>
+ <b>Touch:</b> drag to pan, pinch to zoom, <b>long-press</b> a miner to pick walkers only.<br>
+ <b>Keys (DOS layout):</b> F1/F2 rate, F3&ndash;F10 skills, F11 pause, F12 nuke. Also 1&ndash;0 skills, W walk, P/Space pause, F fast, S slow, N/B frame &plusmn;1, Backspace back 1 s, R restart, hold Ctrl (or right-click) walkers only, hold &larr;/&rarr; facing only, &uarr;/&darr; next/previous skill, Shift+arrows pan, Z/X zoom, M sound, Esc menu. Mouse at the screen edge scrolls.</div>
  <button class="btn" id="bHowOk">Got it</button></div></div>
 <div id="levelsS" class="screen dim hidden"><div class="panel"><h2>The Workings</h2><div class="sub">Choose a seam</div><div class="levels" id="lvList"></div><button class="btn dark" id="bBackTitle">Back</button></div></div>
 <div id="intro" class="screen dim hidden"><div class="panel"><div class="sub" id="iNum">Level 1</div><h2 id="iName"></h2><div class="rule"></div><p class="hint" id="iHint"></p>
@@ -139,6 +176,6 @@ p.hint{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d6c6a6;ma
   <div class="stat"><span>Saved</span><b id="rSaved"></b></div><div class="stat"><span>Needed</span><b id="rQuota"></b></div><div class="stat"><span>Lost</span><b id="rLost"></b></div>
   <p class="hint" id="rHint"></p>
   <button class="btn" id="bNext">Next Level</button><button class="btn dark" id="bRetry2">Retry</button><button class="btn dark" id="bLevels2">Levels</button></div></div>
-<script src="assets.js?v=3"></script>
-<script src="game.js?v=3"></script>
+<script src="assets.js?v=4"></script>
+<script src="game.js?v=4"></script>
 </body></html>

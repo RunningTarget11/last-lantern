@@ -46,7 +46,9 @@ export class Sim{
     for(const m of this.miners)if(m.alive&&m.lamp){const d=Math.hypot(m.x-x,m.y-8-y);if(d<62)best=Math.max(best,1-d/62);}return best;}
   inDark(x,y){for(const z of this.L.dark||[]){if(x>=z[0]&&x<=z[0]+z[2]&&y>=z[1]&&y<=z[1]+z[3])return true;}return false;}
   // ------------ skills ------------
-  canAssign(m,sk){if(m&&m.alive&&sk==='blocker'&&m.state==='blocker')return true;// tapping a blocker again releases him (free)
+  // Walker (unlimited, as in NeoLemmix): releases a blocker, stops any task, wakes a shrugging builder, or turns a walker round
+  canWalk(m){return !!(m&&m.alive&&['blocker','builder','basher','miner','digger','shrug','walk'].includes(m.state));}
+  canAssign(m,sk){if(sk==='walker')return this.canWalk(m);if(m&&m.alive&&sk==='blocker'&&m.state==='blocker')return true;// tapping a blocker again releases him (free)
     if(!m||!m.alive||m.state==='exit'||m.state==='splat'||m.state==='taken'||m.state==='dead')return false;if((this.skills[sk]|0)<=0)return false;
     if(sk==='torch')return false;
     if(PERM[sk])return !m[sk];
@@ -55,6 +57,7 @@ export class Sim{
     if(sk==='blocker')return dig.includes(m.state);
     if(!dig.includes(m.state))return false;return m.state!==sk;}
   assign(m,sk){if(!this.canAssign(m,sk))return false;
+    if(sk==='walker'){const was=m.state;if(was==='walk')m.dir=-m.dir;m.state='walk';m.acc=0;m.st=0;m.n=0;this.events.push({type:'release',m,was});return true;}
     if(sk==='blocker'&&m.state==='blocker'){m.state='walk';m.acc=0;this.events.push({type:'release',m});return true;}
     this.skills[sk]--;
     if(PERM[sk]){m[sk]=true;}
