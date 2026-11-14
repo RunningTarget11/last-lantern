@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050403">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Last Lantern</title>
+<style>
+:root{--brass:#b98a46;--brass-hi:#f1cf8a;--brass-lo:#5a3d18;--iron:#16130f;--ember:#ff9a3c;--txt:#e9d9bb;--dim:#9c8a6c;--slot:min(58px,calc((100vw - 46px)/9.9));
+ --grit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+ --leather:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='turbulence' baseFrequency='.5 .42' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .065  0 0 0 0 .04  0 0 0 -.9 .62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Cinzel,Georgia,serif;color:var(--txt);touch-action:none;overscroll-behavior:none}
+#game{position:fixed;inset:0}#game canvas{display:block;width:100%;height:100%}
+.hidden{display:none!important}
+/* ---------- bottom bar: all controls in one strip ---------- */
+#bar{position:fixed;left:0;right:0;bottom:0;padding:5px 8px calc(6px + env(safe-area-inset-bottom));z-index:10;
+ background:var(--grit),linear-gradient(180deg,#2a241d 0%,#16120e 30%,#0b0907 100%);
+ box-shadow:0 -1px 0 #000,0 -2px 0 #6e5128,0 -3px 0 #2b1d0c,0 -14px 30px rgba(0,0,0,.85);}
+#bar:before{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;background:linear-gradient(90deg,#3a2810,#c79a52 15%,#7a5a2c 50%,#c79a52 85%,#3a2810);opacity:.85}
+#bar:after{content:'';position:absolute;left:10px;right:10px;top:4px;height:6px;background:radial-gradient(circle at 3px 3px,#d9b06a 0,#6a4a1e 1.6px,transparent 2.4px) 0 0/46px 6px repeat-x;opacity:.7;pointer-events:none}
+#status{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.5vw,22px);font-size:clamp(10px,2.9vw,13px);letter-spacing:.08em;margin:5px 0 5px;white-space:nowrap;color:var(--dim);text-shadow:0 1px 0 #000}
+#status b{color:var(--txt);font-weight:700}#status .lvname{color:var(--brass-hi);font-weight:700;margin-right:6px}
+#status .st{display:flex;align-items:center;gap:5px}#status .st i{display:inline-block;width:9px;height:9px;transform:rotate(45deg);background:linear-gradient(135deg,var(--brass-hi),var(--brass-lo));box-shadow:0 0 0 1px #000}
+#status .saved b{color:#ffd58a}#status .lost b{color:#c9786a}#status .time.low b{color:#ff6a4a}
+.quota{display:inline-block;width:clamp(40px,10vw,90px);height:6px;border-radius:3px;background:#000;box-shadow:inset 0 1px 2px #000,0 0 0 1px #4a3618;position:relative;overflow:hidden}
+.quota>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8a4a12,#ffb44a);box-shadow:0 0 8px #ff9a3c}
+.quota>em{position:absolute;top:-2px;bottom:-2px;width:2px;background:#f1cf8a}
+#tools{display:flex;justify-content:center;align-items:flex-end;gap:clamp(3px,1.1vw,9px)}
+.sep{width:2px;align-self:stretch;margin:4px clamp(1px,.6vw,5px);background:linear-gradient(180deg,transparent,#6e5128,transparent)}
+.slot{position:relative;width:var(--slot);height:var(--slot);border-radius:7px;cursor:pointer;flex:none;
+ background:radial-gradient(circle at 50% 38%,#2b241c 0%,#0d0b09 75%),var(--leather);
+ box-shadow:inset 0 0 0 1px #000,inset 0 2px 6px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,210,150,.08),0 0 0 2px #24190d,0 0 0 3px #8a6532,0 0 0 4px #2a1b0a,0 4px 8px rgba(0,0,0,.9);transition:box-shadow .15s,transform .1s}
+.slot:before{content:'';position:absolute;inset:-4px;border-radius:9px;pointer-events:none;background:
+ radial-gradient(circle at 4px 4px,#f3d48f 0,#8a6532 1.5px,transparent 2.6px),radial-gradient(circle at calc(100% - 4px) 4px,#f3d48f 0,#8a6532 1.5px,transparent 2.6px),
+ radial-gradient(circle at 4px calc(100% - 4px),#f3d48f 0,#8a6532 1.5px,transparent 2.6px),radial-gradient(circle at calc(100% - 4px) calc(100% - 4px),#f3d48f 0,#8a6532 1.5px,transparent 2.6px)}
+.slot img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 2px 2px #000);pointer-events:none}
+.slot .cnt{position:absolute;right:-5px;bottom:-5px;min-width:19px;height:19px;padding:0 4px;border-radius:10px;font:700 11px/19px Cinzel,serif;text-align:center;color:#1a0f04;
+ background:radial-gradient(circle at 35% 30%,#ffe7b0,#c08a3e 55%,#6a4416);box-shadow:0 0 0 1px #000,0 2px 3px #000}
+.slot .lab{position:absolute;left:50%;top:-15px;transform:translateX(-50%);font-size:8.5px;letter-spacing:.12em;color:var(--dim);white-space:nowrap;pointer-events:none;text-shadow:0 1px 1px #000;opacity:0;transition:opacity .2s}
+.slot.sel .lab{opacity:0}
+.slot.sel{transform:translateY(-3px);box-shadow:inset 0 0 0 1px #000,inset 0 0 18px rgba(255,140,40,.45),0 0 0 2px #3a2610,0 0 0 3px #f1cf8a,0 0 0 4px #3a2610,0 0 16px 3px rgba(255,150,50,.55),0 6px 10px #000}
+.slot.empty img{filter:grayscale(1) brightness(.35)}.slot.empty .cnt{filter:grayscale(1) brightness(.6)}
+.slot.none{display:none}
+.slot.small{width:calc(var(--slot)*.72);height:calc(var(--slot)*.72)}
+.slot svg{position:absolute;inset:22%;width:56%;height:56%;fill:url(#brassg);filter:drop-shadow(0 1px 1px #000)}
+.slot .sp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 13px Cinzel;color:var(--brass-hi);text-shadow:0 1px 2px #000}
+.slot:active{transform:scale(.94)}
+/* ---------- world labels ---------- */
+#labels{position:fixed;inset:0;pointer-events:none;z-index:5}
+.wl{position:absolute;transform:translate(-50%,-100%);font-size:11px;letter-spacing:.1em;padding:2px 8px 2px 6px;border-radius:3px;white-space:nowrap;display:flex;align-items:center;gap:5px;
+ background:linear-gradient(180deg,rgba(30,22,14,.85),rgba(10,8,6,.85));box-shadow:0 0 0 1px #5a4020,0 2px 6px #000;color:var(--txt)}
+.wl.warn{color:#ffcf8a}.wl.urgent{color:#ff6a48;animation:pulse .5s infinite alternate}.wl.ok{color:#bfe0a0}.wl.gas{color:#c8d27a;opacity:.75;font-size:9.5px}
+.wl .pb{width:30px;height:4px;background:#000;border-radius:2px;overflow:hidden}.wl .pb span{display:block;height:100%;background:#9fd07a}
+@keyframes pulse{to{box-shadow:0 0 0 1px #ff6a48,0 0 12px #ff4a2a}}
+#marker{position:fixed;width:44px;height:16px;margin:-8px 0 0 -22px;border-radius:50%;pointer-events:none;z-index:4;box-shadow:0 0 0 2px rgba(255,190,110,.8),0 0 14px rgba(255,160,60,.9);opacity:0;transition:opacity .4s}
+#toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;padding:7px 16px;font-size:13px;letter-spacing:.08em;color:var(--txt);
+ background:var(--grit),linear-gradient(180deg,#2a2017,#0f0c09);box-shadow:0 0 0 1px #000,0 0 0 2px #7a5a2c,0 6px 16px #000;border-radius:4px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+#ghost{position:fixed;width:56px;height:56px;margin:-28px 0 0 -28px;pointer-events:none;z-index:30;opacity:.9;filter:drop-shadow(0 0 10px rgba(255,150,50,.8))}
+/* ---------- panels ---------- */
+.screen{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.dim{background:radial-gradient(ellipse at center,rgba(0,0,0,.35),rgba(0,0,0,.85))}
+.panel{position:relative;max-width:min(560px,94vw);max-height:92vh;overflow:auto;padding:26px 26px 22px;text-align:center;border-radius:6px;
+ background:var(--grit),radial-gradient(ellipse at 50% 0%,rgba(120,70,30,.25),transparent 60%),var(--leather),linear-gradient(180deg,#1f1812,#0c0907);
+ box-shadow:inset 0 0 0 1px #000,inset 0 0 40px rgba(0,0,0,.8),0 0 0 2px #2a1b0a,0 0 0 4px #9a7038,0 0 0 5px #1a1006,0 0 0 7px #3a2a14,0 20px 60px #000}
+.panel:before,.panel:after{content:'';position:absolute;width:38px;height:38px;pointer-events:none;
+ background:linear-gradient(135deg,#f1cf8a,#7a5424 60%,#3a2810);clip-path:polygon(0 0,100% 0,100% 18%,30% 18%,18% 30%,18% 100%,0 100%)}
+.panel:before{left:-6px;top:-6px}.panel:after{right:-6px;bottom:-6px;transform:rotate(180deg)}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:.14em}
+h2{font-size:clamp(18px,5vw,26px);color:var(--brass-hi);text-shadow:0 0 18px rgba(255,150,60,.35),0 2px 2px #000}
+.sub{color:var(--dim);font-size:12px;letter-spacing:.2em;margin-top:6px;text-transform:uppercase}
+.rule{height:12px;margin:12px auto;width:80%;background:radial-gradient(circle,#e8c27c 0,#8a6532 2px,transparent 3px) center/12px 12px no-repeat,linear-gradient(90deg,transparent,#8a6532 30%,#8a6532 70%,transparent) center/100% 1px no-repeat}
+p.hint{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d6c6a6;margin:8px 4px 14px;letter-spacing:.02em}
+.btn{display:inline-block;margin:6px;padding:11px 24px;min-width:120px;font:700 14px Cinzel,serif;letter-spacing:.16em;color:#1a0f04;cursor:pointer;border:0;border-radius:4px;
+ background:linear-gradient(180deg,#f6dc9e 0%,#c89a52 45%,#8a5e26 55%,#b6843e 100%);box-shadow:inset 0 1px 0 #fff3cf,inset 0 -2px 3px rgba(0,0,0,.4),0 0 0 1px #2a1806,0 0 0 2px #6a4818,0 4px 10px #000;text-shadow:0 1px 0 rgba(255,240,200,.6)}
+.btn.dark{color:var(--brass-hi);background:linear-gradient(180deg,#3a2e22,#16110c);text-shadow:0 1px 1px #000;box-shadow:inset 0 1px 0 rgba(255,220,160,.15),0 0 0 1px #000,0 0 0 2px #7a5a2c,0 4px 10px #000}
+.btn:active{transform:translateY(1px) scale(.98)}
+.stars{display:flex;gap:10px;justify-content:center;margin:10px 0}
+.star{width:44px;height:44px}.star path{fill:#120d08;stroke:#6a4a1e;stroke-width:1.2}.star.on path{fill:url(#starg);stroke:#ffe6a8;filter:drop-shadow(0 0 6px rgba(255,170,60,.8))}
+.stars.small .star{width:15px;height:15px}
+.stat{display:flex;justify-content:space-between;max-width:280px;margin:4px auto;font-size:14px;letter-spacing:.08em;color:var(--dim)}.stat b{color:var(--txt)}
+/* title */
+#title{z-index:45;flex-direction:column;background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,.25) 0%,rgba(0,0,0,.35) 45%,rgba(0,0,0,.85) 100%)}
+#title h1{font-family:CinzelDeco,Cinzel,serif;font-size:clamp(38px,11vw,96px);letter-spacing:.06em;line-height:1;text-align:center;
+ background:linear-gradient(180deg,#fff2c8 0%,#f0b860 38%,#b8641c 62%,#5a2a0a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 22px rgba(255,140,40,.45)) drop-shadow(0 3px 2px #000);animation:flick 3.2s infinite}
+@keyframes flick{0%,100%{filter:drop-shadow(0 0 22px rgba(255,140,40,.45)) drop-shadow(0 3px 2px #000)}45%{filter:drop-shadow(0 0 30px rgba(255,150,50,.6)) drop-shadow(0 3px 2px #000)}52%{filter:drop-shadow(0 0 14px rgba(255,120,30,.35)) drop-shadow(0 3px 2px #000)}}
+#title .tag{font-family:Georgia,serif;font-style:italic;color:#cbb994;font-size:clamp(13px,3.6vw,18px);margin:10px 0 26px;letter-spacing:.06em;text-shadow:0 2px 4px #000}
+#title .foot{position:absolute;bottom:max(10px,env(safe-area-inset-bottom));font-size:10px;color:#6e604a;letter-spacing:.2em}
+/* level select */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0 6px;text-align:left}
+.lv{position:relative;padding:12px 12px 10px 48px;border-radius:4px;cursor:pointer;background:linear-gradient(180deg,rgba(60,44,28,.55),rgba(14,10,7,.8));box-shadow:inset 0 0 0 1px #000,0 0 0 1px #6a4c24,0 3px 8px #000}
+.lv:active{transform:scale(.98)}
+.lv .num{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;font:700 15px/32px Cinzel;text-align:center;color:#1a0f04;background:radial-gradient(circle at 35% 30%,#ffe7b0,#c08a3e 55%,#5a3a12);box-shadow:0 0 0 1px #000,0 2px 4px #000}
+.lv .nm{font-weight:700;font-size:13px;letter-spacing:.08em;color:var(--brass-hi)}.lv .ds{font-size:10px;color:var(--dim);letter-spacing:.1em;margin-top:3px;font-family:Georgia,serif;font-style:italic}
+#loading{z-index:60;background:#000;flex-direction:column}#loading .bar{width:min(260px,70vw);height:4px;background:#1a140e;margin-top:16px;box-shadow:0 0 0 1px #5a4020}#loading .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a4a12,#ffb44a);transition:width .2s}
+.qrow{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}.qrow .btn{min-width:0;padding:8px 12px;font-size:11px}.qrow .btn.on{box-shadow:inset 0 1px 0 #fff3cf,0 0 0 1px #2a1806,0 0 0 2px #ffe6a8,0 0 12px rgba(255,170,60,.7)}
+@media (orientation:portrait){#status .lvname{display:none}#status{gap:10px}.quota{width:34px}.sep{margin:4px 1px}}
+@media (orientation:landscape) and (max-height:500px){.panel{padding:16px 22px 14px}.levels{grid-template-columns:repeat(3,1fr)}p.hint{font-size:13px;margin:6px 4px 8px}.stars .star{width:36px;height:36px}#status{margin:3px 0 4px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="brassg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9b4"/><stop offset=".5" stop-color="#c8964c"/><stop offset="1" stop-color="#6a4416"/></linearGradient>
+<linearGradient id="starg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2c8"/><stop offset=".45" stop-color="#f2b54e"/><stop offset="1" stop-color="#8a4a10"/></linearGradient>
+</defs></svg>
+<div id="game"></div>
+<div id="labels"></div><div id="marker"></div><div id="toast"></div><img id="ghost" class="hidden" alt="">
+<div id="bar" class="hidden">
+  <div id="status">
+    <span class="lvname" id="sLv">The Lamp Room</span>
+    <span class="st saved"><i></i>Saved <b id="sSaved">0/7</b> <span class="quota"><span id="sQ"></span><em id="sQm"></em></span></span>
+    <span class="st">Out <b id="sOut">0</b></span>
+    <span class="st lost">Lost <b id="sLost">0</b></span>
+    <span class="st time" id="sTimeW">Time <b id="sTime">3:00</b></span>
+  </div>
+  <div id="tools"></div>
+</div>
+<div id="loading" class="screen"><h2>Last Lantern</h2><div class="sub" id="loadTxt">Lighting the lamps…</div><div class="bar"><span id="loadBar"></span></div></div>
+<div id="title" class="screen hidden"><h1>Last<br>Lantern</h1><div class="tag">The mine has fallen. The dark is hungry. Bring them home.</div>
+  <div><button class="btn" id="bPlay">Descend</button></div><div style="margin-top:6px"><button class="btn dark" id="bSound">Sound: On</button></div>
+  <div class="foot">PROTOTYPE · BUILD 1</div></div>
+<div id="levelsS" class="screen dim hidden"><div class="panel"><h2>The Workings</h2><div class="sub">Choose a seam</div><div class="levels" id="lvList"></div><button class="btn dark" id="bBackTitle">Back</button></div></div>
+<div id="intro" class="screen dim hidden"><div class="panel"><div class="sub" id="iNum">Level 1</div><h2 id="iName">The Lamp Room</h2><div class="rule"></div><p class="hint" id="iHint"></p>
+  <div class="stat"><span>Miners</span><b id="iTotal">10</b></div><div class="stat"><span>Must save</span><b id="iQuota">7</b></div><div class="stat"><span>Time</span><b id="iTime">3:00</b></div>
+  <div style="margin-top:12px"><button class="btn" id="bBegin">Begin</button></div></div></div>
+<div id="pause" class="screen dim hidden"><div class="panel"><h2>Paused</h2><div class="rule"></div>
+  <button class="btn" id="bResume">Resume</button><br><button class="btn dark" id="bRetry">Restart Level</button><br><button class="btn dark" id="bLevels">Level Select</button><br>
+  <button class="btn dark" id="bSound2">Sound: On</button><div class="sub" style="margin-top:10px">Graphics</div><div class="qrow" id="qrow"></div></div></div>
+<div id="result" class="screen dim hidden"><div class="panel"><div class="sub" id="rSub">Level 1</div><h2 id="rTitle">The Lift Rises</h2><div class="stars" id="rStars"></div>
+  <div class="stat"><span>Saved</span><b id="rSaved">0</b></div><div class="stat"><span>Needed</span><b id="rQuota">0</b></div><div class="stat"><span>Lost to the dark</span><b id="rLost">0</b></div>
+  <p class="hint" id="rHint"></p>
+  <button class="btn" id="bNext">Next Level</button><button class="btn dark" id="bRetry2">Retry</button><button class="btn dark" id="bLevels2">Levels</button></div></div>
+<script src="assets.js"></script>
+<script src="game.js"></script>
+</body></html>

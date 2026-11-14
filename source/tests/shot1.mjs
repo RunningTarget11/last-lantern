@@ -1,0 +1,13 @@
+import {chromium,devices} from 'playwright';
+const out=process.argv[2]||'/tmp/ll';const lvl=process.argv[3]||'1';const adv=+(process.argv[4]||25);const mode=process.argv[5]||'desktop';
+const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+const setups={desktop:{viewport:{width:1600,height:900}},landscape:{...devices['Pixel 7'],viewport:{width:915,height:412}},portrait:{...devices['Pixel 7']}};
+const ctx=await browser.newContext(setups[mode]);const page=await ctx.newPage();const errs=[];
+page.on('pageerror',e=>errs.push(e.message));page.on('console',m=>{if(m.type()==='error'||m.type()==='warning')errs.push(m.type()+': '+m.text());});
+await page.goto('file:///workspace/last-lantern/index.html?level='+lvl);
+await page.waitForFunction(()=>window.__LL,null,{timeout:180000});
+await page.waitForTimeout(1500);await page.screenshot({path:out+'_intro.jpg',quality:85});
+await page.click('#bBegin');
+await page.evaluate((adv)=>{const {G}=__LL;const s=G.sim;const n=Math.round(adv*60);for(let i=0;i<n;i++){s.tick();G.world.handle(s.drainEvents());}for(let k=0;k<30;k++)G.world.update(1/30,G.t+k/30,[0,0,s.W,s.H]);},adv);
+await page.waitForTimeout(2500);await page.screenshot({path:out+'_play.jpg',quality:85});
+console.log(errs.slice(0,15).join('\n'));await browser.close();

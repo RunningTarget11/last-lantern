@@ -1,0 +1,27 @@
+LAST LANTERN - CREDITS AND LICENSES
+===================================
+Code: original prototype code, (c) the repository owner.
+
+Engine
+  three.js r170 (incl. examples/jsm postprocessing, GLTFLoader, SkeletonUtils)
+  MIT License - https://threejs.org
+
+Textures (Poly Haven, CC0 1.0 - https://polyhaven.com/license)
+  Dark Rock, Rock Ground, Medieval Wood, Rusty Metal 02
+
+3D models (CC0 1.0)
+  Poly Haven: Wine Barrel 01, Wooden Crate 01
+  Quaternius: Ultimate Modular Characters / outfits (peasant, ranger, head),
+              Universal Animation Library 1 & 2 (clips)
+              https://quaternius.com
+
+Fonts
+  Cinzel and Cinzel Decorative by Natanael Gama - SIL Open Font License 1.1
+
+Generated in-game (original, no third-party assets)
+  Cave terrain, timbers, rails, cart, lift, lamps, torches, tools, helmets,
+  flames, smoke, dust, gas and shadow creatures are procedural geometry and shaders.
+  All audio is synthesized at runtime with WebAudio.
+  Toolbar icons are rendered at load time from the game's own 3D props.
+
+AI-generated art: none is used in this build.
