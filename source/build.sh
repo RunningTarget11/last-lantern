@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 set -e
-cd /workspace/ll-src
-npx esbuild src/main.js --bundle --minify --format=iife --target=es2020 --outfile=/workspace/last-lantern/game.js --log-level=warning
-cp index.html /workspace/last-lantern/index.html
-ls -la /workspace/last-lantern/game.js
+cd /workspace/lem-src
+npx esbuild src/game.js --bundle --minify --format=iife --target=es2019 --outfile=dist/game.js --log-level=warning
+cp index.html dist/index.html
+ls -la dist/game.js

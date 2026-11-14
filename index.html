@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <title>Last Lantern</title>
 <style>
-:root{--brass:#b98a46;--brass-hi:#f1cf8a;--brass-lo:#5a3d18;--iron:#16130f;--ember:#ff9a3c;--txt:#e9d9bb;--dim:#9c8a6c;--slot:min(58px,calc((100vw - 46px)/9.9));
+:root{--brass:#b98a46;--brass-hi:#f1cf8a;--brass-lo:#5a3d18;--iron:#16130f;--ember:#ff9a3c;--txt:#e9d9bb;--dim:#9c8a6c;--slot:min(56px,calc((100vw - 60px)/16));
  --grit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
  --leather:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='turbulence' baseFrequency='.5 .42' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .065  0 0 0 0 .04  0 0 0 -.9 .62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -20,16 +20,11 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Cinze
  background:var(--grit),linear-gradient(180deg,#2a241d 0%,#16120e 30%,#0b0907 100%);
  box-shadow:0 -1px 0 #000,0 -2px 0 #6e5128,0 -3px 0 #2b1d0c,0 -14px 30px rgba(0,0,0,.85);}
 #bar:before{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;background:linear-gradient(90deg,#3a2810,#c79a52 15%,#7a5a2c 50%,#c79a52 85%,#3a2810);opacity:.85}
-#bar:after{content:'';position:absolute;left:10px;right:10px;top:4px;height:6px;background:radial-gradient(circle at 3px 3px,#d9b06a 0,#6a4a1e 1.6px,transparent 2.4px) 0 0/46px 6px repeat-x;opacity:.7;pointer-events:none}
-#status{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.5vw,22px);font-size:clamp(10px,2.9vw,13px);letter-spacing:.08em;margin:5px 0 5px;white-space:nowrap;color:var(--dim);text-shadow:0 1px 0 #000}
-#status b{color:var(--txt);font-weight:700}#status .lvname{color:var(--brass-hi);font-weight:700;margin-right:6px}
-#status .st{display:flex;align-items:center;gap:5px}#status .st i{display:inline-block;width:9px;height:9px;transform:rotate(45deg);background:linear-gradient(135deg,var(--brass-hi),var(--brass-lo));box-shadow:0 0 0 1px #000}
-#status .saved b{color:#ffd58a}#status .lost b{color:#c9786a}#status .time.low b{color:#ff6a4a}
-.quota{display:inline-block;width:clamp(40px,10vw,90px);height:6px;border-radius:3px;background:#000;box-shadow:inset 0 1px 2px #000,0 0 0 1px #4a3618;position:relative;overflow:hidden}
-.quota>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8a4a12,#ffb44a);box-shadow:0 0 8px #ff9a3c}
-.quota>em{position:absolute;top:-2px;bottom:-2px;width:2px;background:#f1cf8a}
-#tools{display:flex;justify-content:center;align-items:flex-end;gap:clamp(3px,1.1vw,9px)}
-.sep{width:2px;align-self:stretch;margin:4px clamp(1px,.6vw,5px);background:linear-gradient(180deg,transparent,#6e5128,transparent)}
+
+#game{position:fixed;inset:0}#game canvas{display:block;width:100%;height:100%;touch-action:none}
+#bar{padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+#barIn{display:flex;align-items:center;justify-content:center;gap:clamp(3px,.9vw,8px);flex-wrap:nowrap}
+#skills,#ctrls{display:flex;align-items:center;gap:clamp(3px,.9vw,8px)}
 .slot{position:relative;width:var(--slot);height:var(--slot);border-radius:7px;cursor:pointer;flex:none;
  background:radial-gradient(circle at 50% 38%,#2b241c 0%,#0d0b09 75%),var(--leather);
  box-shadow:inset 0 0 0 1px #000,inset 0 2px 6px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,210,150,.08),0 0 0 2px #24190d,0 0 0 3px #8a6532,0 0 0 4px #2a1b0a,0 4px 8px rgba(0,0,0,.9);transition:box-shadow .15s,transform .1s}
@@ -48,17 +43,23 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Cinze
 .slot svg{position:absolute;inset:22%;width:56%;height:56%;fill:url(#brassg);filter:drop-shadow(0 1px 1px #000)}
 .slot .sp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 13px Cinzel;color:var(--brass-hi);text-shadow:0 1px 2px #000}
 .slot:active{transform:scale(.94)}
+
+.slot .cnt{right:-4px;top:-5px;bottom:auto}
+.slot .key{position:absolute;left:3px;top:1px;font:700 8px Cinzel;color:#7a6446}
+.slot .lab{opacity:1;top:auto;bottom:2px;font-size:7.5px;color:#cdb68a;letter-spacing:.06em}
+.slot.ctl .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 15px Cinzel;color:var(--brass-hi);text-shadow:0 1px 2px #000;padding-bottom:6px}
+.slot.ctl.on{box-shadow:inset 0 0 0 1px #000,inset 0 0 18px rgba(255,140,40,.45),0 0 0 2px #3a2610,0 0 0 3px #f1cf8a,0 0 0 4px #3a2610,0 0 14px 2px rgba(255,150,50,.5)}
+.slot.nuke.arm{animation:arm .4s infinite alternate}@keyframes arm{to{box-shadow:0 0 0 3px #ff5a2a,0 0 18px #ff3a1a}}
+#hud{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));z-index:9;display:flex;gap:14px;align-items:center;padding:5px 12px;border-radius:4px;font-size:clamp(10px,2.6vw,13px);letter-spacing:.1em;color:var(--dim);
+ background:var(--grit),linear-gradient(180deg,rgba(34,26,18,.88),rgba(10,8,6,.88));box-shadow:0 0 0 1px #000,0 0 0 2px #6e5128,0 4px 12px #000;white-space:nowrap;pointer-events:none}
+#hud b{color:var(--txt)}#hud .lv{color:var(--brass-hi);font-weight:700}#hud .in b{color:#ffd58a}#hud .time.low b{color:#ff6a4a}
+#hud .sel{color:#e9d9bb;min-width:7em}
+#mini{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));z-index:9;border-radius:3px;box-shadow:0 0 0 1px #000,0 0 0 2px #6e5128,0 4px 12px #000;background:#000;touch-action:none;cursor:pointer}
+@media (orientation:portrait){#barIn{flex-wrap:wrap;row-gap:8px}#skills{width:100%;justify-content:center}:root{--slot:min(52px,calc((100vw - 50px)/8.6))}#hud{flex-wrap:wrap;row-gap:2px;max-width:calc(100vw - 150px)}#hud .lv{display:none}#toast{top:calc(max(8px,env(safe-area-inset-top)) + 62px);font-size:12px}}
+@media (orientation:landscape) and (max-height:500px){:root{--slot:min(44px,calc((100vw - 80px)/16))}#bar{padding-top:4px}}
 /* ---------- world labels ---------- */
-#labels{position:fixed;inset:0;pointer-events:none;z-index:5}
-.wl{position:absolute;transform:translate(-50%,-100%);font-size:11px;letter-spacing:.1em;padding:2px 8px 2px 6px;border-radius:3px;white-space:nowrap;display:flex;align-items:center;gap:5px;
- background:linear-gradient(180deg,rgba(30,22,14,.85),rgba(10,8,6,.85));box-shadow:0 0 0 1px #5a4020,0 2px 6px #000;color:var(--txt)}
-.wl.warn{color:#ffcf8a}.wl.urgent{color:#ff6a48;animation:pulse .5s infinite alternate}.wl.ok{color:#bfe0a0}.wl.gas{color:#c8d27a;opacity:.75;font-size:9.5px}
-.wl .pb{width:30px;height:4px;background:#000;border-radius:2px;overflow:hidden}.wl .pb span{display:block;height:100%;background:#9fd07a}
-@keyframes pulse{to{box-shadow:0 0 0 1px #ff6a48,0 0 12px #ff4a2a}}
-#marker{position:fixed;width:44px;height:16px;margin:-8px 0 0 -22px;border-radius:50%;pointer-events:none;z-index:4;box-shadow:0 0 0 2px rgba(255,190,110,.8),0 0 14px rgba(255,160,60,.9);opacity:0;transition:opacity .4s}
-#toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;padding:7px 16px;font-size:13px;letter-spacing:.08em;color:var(--txt);
+#toast{position:fixed;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 64px);transform:translateX(-50%);z-index:20;padding:7px 16px;font-size:13px;letter-spacing:.08em;color:var(--txt);
  background:var(--grit),linear-gradient(180deg,#2a2017,#0f0c09);box-shadow:0 0 0 1px #000,0 0 0 2px #7a5a2c,0 6px 16px #000;border-radius:4px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
-#ghost{position:fixed;width:56px;height:56px;margin:-28px 0 0 -28px;pointer-events:none;z-index:30;opacity:.9;filter:drop-shadow(0 0 10px rgba(255,150,50,.8))}
 /* ---------- panels ---------- */
 .screen{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
 .dim{background:radial-gradient(ellipse at center,rgba(0,0,0,.35),rgba(0,0,0,.85))}
@@ -96,9 +97,14 @@ p.hint{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d6c6a6;ma
 .lv .num{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;font:700 15px/32px Cinzel;text-align:center;color:#1a0f04;background:radial-gradient(circle at 35% 30%,#ffe7b0,#c08a3e 55%,#5a3a12);box-shadow:0 0 0 1px #000,0 2px 4px #000}
 .lv .nm{font-weight:700;font-size:13px;letter-spacing:.08em;color:var(--brass-hi)}.lv .ds{font-size:10px;color:var(--dim);letter-spacing:.1em;margin-top:3px;font-family:Georgia,serif;font-style:italic}
 #loading{z-index:60;background:#000;flex-direction:column}#loading .bar{width:min(260px,70vw);height:4px;background:#1a140e;margin-top:16px;box-shadow:0 0 0 1px #5a4020}#loading .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a4a12,#ffb44a);transition:width .2s}
-.qrow{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}.qrow .btn{min-width:0;padding:8px 12px;font-size:11px}.qrow .btn.on{box-shadow:inset 0 1px 0 #fff3cf,0 0 0 1px #2a1806,0 0 0 2px #ffe6a8,0 0 12px rgba(255,170,60,.7)}
 @media (orientation:portrait){#status .lvname{display:none}#status{gap:10px}.quota{width:34px}.sep{margin:4px 1px}}
 @media (orientation:landscape) and (max-height:500px){.panel{padding:16px 22px 14px}.levels{grid-template-columns:repeat(3,1fr)}p.hint{font-size:13px;margin:6px 4px 8px}.stars .star{width:36px;height:36px}#status{margin:3px 0 4px}}
+
+.panel .skl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px}
+.panel .skl span{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:3px;font-size:11px;letter-spacing:.08em;background:rgba(0,0,0,.4);box-shadow:0 0 0 1px #5a4020;color:var(--txt)}
+.panel .skl img{width:22px;height:22px;object-fit:contain}
+.help{font-family:Georgia,serif;font-size:13px;color:#cbb994;line-height:1.5;text-align:left;max-width:440px;margin:6px auto}
+.help b{font-family:Cinzel,serif;color:var(--brass-hi);font-size:12px;letter-spacing:.08em}
 </style>
 </head>
 <body>
@@ -106,33 +112,33 @@ p.hint{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d6c6a6;ma
 <linearGradient id="brassg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9b4"/><stop offset=".5" stop-color="#c8964c"/><stop offset="1" stop-color="#6a4416"/></linearGradient>
 <linearGradient id="starg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2c8"/><stop offset=".45" stop-color="#f2b54e"/><stop offset="1" stop-color="#8a4a10"/></linearGradient>
 </defs></svg>
-<div id="game"></div>
-<div id="labels"></div><div id="marker"></div><div id="toast"></div><img id="ghost" class="hidden" alt="">
-<div id="bar" class="hidden">
-  <div id="status">
-    <span class="lvname" id="sLv">The Lamp Room</span>
-    <span class="st saved"><i></i>Saved <b id="sSaved">0/7</b> <span class="quota"><span id="sQ"></span><em id="sQm"></em></span></span>
-    <span class="st">Out <b id="sOut">0</b></span>
-    <span class="st lost">Lost <b id="sLost">0</b></span>
-    <span class="st time" id="sTimeW">Time <b id="sTime">3:00</b></span>
-  </div>
-  <div id="tools"></div>
-</div>
-<div id="loading" class="screen"><h2>Last Lantern</h2><div class="sub" id="loadTxt">Lighting the lamps…</div><div class="bar"><span id="loadBar"></span></div></div>
-<div id="title" class="screen hidden"><h1>Last<br>Lantern</h1><div class="tag">The mine has fallen. The dark is hungry. Bring them home.</div>
-  <div><button class="btn" id="bPlay">Descend</button></div><div style="margin-top:6px"><button class="btn dark" id="bSound">Sound: On</button></div>
-  <div class="foot">PROTOTYPE · BUILD 1</div></div>
+<div id="game"><canvas id="cv"></canvas></div>
+<div id="hud" class="hidden"><span class="lv" id="hLv"></span><span>Out <b id="hOut">0</b></span><span class="in">In <b id="hIn">0</b><span id="hNeed"></span></span><span class="time" id="hTimeW">Time <b id="hTime">0:00</b></span><span class="sel" id="hSel"></span></div>
+<canvas id="mini" class="hidden"></canvas>
+<div id="toast"></div>
+<div id="bar" class="hidden"><div id="barIn"><div id="skills"></div><div class="sep" id="sep1"></div><div id="ctrls"></div></div></div>
+<div id="loading" class="screen"><h2>Last Lantern</h2><div class="sub" id="loadTxt">Lighting the lamps&hellip;</div><div class="bar"><span id="loadBar"></span></div></div>
+<div id="title" class="screen hidden"><h1>Last<br>Lantern</h1><div class="tag">The mine has fallen. Lead the miners home before the dark takes them.</div>
+  <div><button class="btn" id="bPlay">Descend</button></div><div style="margin-top:6px"><button class="btn dark" id="bHow">How to Play</button><button class="btn dark" id="bSound">Sound: On</button></div>
+  <div class="foot">PROTOTYPE &middot; BUILD 3</div></div>
+<div id="how" class="screen dim hidden"><div class="panel"><h2>How to Play</h2><div class="rule"></div><div class="help">
+ Miners drop from the hatch and walk on their own. They turn at walls, fall off ledges, and a long fall kills them. Get enough of them into the <b>lift</b>.<br><br>
+ <b>Tap a skill, then tap a miner.</b> The miner under your finger or cursor is ringed in brass.<br>
+ <b>Climber</b> scales walls. <b>Floater</b> opens a canvas sack and survives any fall. <b>Blaster</b> sets a powder charge (5 s). <b>Blocker</b> turns the crowd (tap him again with Blocker to release him). <b>Builder</b> lays a timber stair. <b>Basher</b> tunnels sideways, <b>Miner</b> diagonally down, <b>Digger</b> straight down. Granite can't be broken.<br>
+ <b>Lamp</b> gives a miner a Davy lamp. <b>Torch</b>: tap the ground to plant one. Unlit miners in a shadow seam are taken.<br><br>
+ <b>Drag</b> to pan, <b>pinch</b> or <b>wheel</b> to zoom, or tap the map. Keys: 1&ndash;0 skills, &minus;/+ release rate, P pause, F fast-forward, N nuke (press twice), arrows pan.</div>
+ <button class="btn" id="bHowOk">Got it</button></div></div>
 <div id="levelsS" class="screen dim hidden"><div class="panel"><h2>The Workings</h2><div class="sub">Choose a seam</div><div class="levels" id="lvList"></div><button class="btn dark" id="bBackTitle">Back</button></div></div>
-<div id="intro" class="screen dim hidden"><div class="panel"><div class="sub" id="iNum">Level 1</div><h2 id="iName">The Lamp Room</h2><div class="rule"></div><p class="hint" id="iHint"></p>
-  <div class="stat"><span>Miners</span><b id="iTotal">10</b></div><div class="stat"><span>Must save</span><b id="iQuota">7</b></div><div class="stat"><span>Time</span><b id="iTime">3:00</b></div>
-  <div style="margin-top:12px"><button class="btn" id="bBegin">Begin</button></div></div></div>
+<div id="intro" class="screen dim hidden"><div class="panel"><div class="sub" id="iNum">Level 1</div><h2 id="iName"></h2><div class="rule"></div><p class="hint" id="iHint"></p>
+  <div class="stat"><span>Miners</span><b id="iTotal"></b></div><div class="stat"><span>Save</span><b id="iQuota"></b></div><div class="stat"><span>Release rate</span><b id="iRate"></b></div><div class="stat"><span>Time</span><b id="iTime"></b></div>
+  <div class="skl" id="iSkills"></div>
+  <div style="margin-top:10px"><button class="btn" id="bBegin">Begin</button><button class="btn dark" id="bIntroBack">Levels</button></div></div></div>
 <div id="pause" class="screen dim hidden"><div class="panel"><h2>Paused</h2><div class="rule"></div>
-  <button class="btn" id="bResume">Resume</button><br><button class="btn dark" id="bRetry">Restart Level</button><br><button class="btn dark" id="bLevels">Level Select</button><br>
-  <button class="btn dark" id="bSound2">Sound: On</button><div class="sub" style="margin-top:10px">Graphics</div><div class="qrow" id="qrow"></div></div></div>
-<div id="result" class="screen dim hidden"><div class="panel"><div class="sub" id="rSub">Level 1</div><h2 id="rTitle">The Lift Rises</h2><div class="stars" id="rStars"></div>
-  <div class="stat"><span>Saved</span><b id="rSaved">0</b></div><div class="stat"><span>Needed</span><b id="rQuota">0</b></div><div class="stat"><span>Lost to the dark</span><b id="rLost">0</b></div>
+  <button class="btn" id="bResume">Resume</button><br><button class="btn dark" id="bRetry">Restart Level</button><br><button class="btn dark" id="bLevels">Level Select</button><br><button class="btn dark" id="bHow2">How to Play</button><br><button class="btn dark" id="bSound2">Sound: On</button></div></div>
+<div id="result" class="screen dim hidden"><div class="panel"><div class="sub" id="rSub"></div><h2 id="rTitle"></h2><div class="stars" id="rStars"></div>
+  <div class="stat"><span>Saved</span><b id="rSaved"></b></div><div class="stat"><span>Needed</span><b id="rQuota"></b></div><div class="stat"><span>Lost</span><b id="rLost"></b></div>
   <p class="hint" id="rHint"></p>
   <button class="btn" id="bNext">Next Level</button><button class="btn dark" id="bRetry2">Retry</button><button class="btn dark" id="bLevels2">Levels</button></div></div>
-<script src="assets.js"></script>
-<script src="game.js"></script>
+<script src="assets.js?v=3"></script>
+<script src="game.js?v=3"></script>
 </body></html>

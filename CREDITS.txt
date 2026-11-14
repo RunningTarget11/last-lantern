@@ -2,31 +2,23 @@ LAST LANTERN - CREDITS AND LICENSES
 ===================================
 Code: original prototype code, (c) the repository owner.
 
-Engine
-  three.js r170 (incl. examples/jsm postprocessing, GLTFLoader, SkeletonUtils)
-  MIT License - https://threejs.org
+Characters and animation (CC0 1.0, https://quaternius.com)
+  Quaternius Ultimate Modular Characters (outfits, head) and Universal Animation
+  Library 1 & 2 clips. Rendered side-on to sprite sheets with three.js (MIT) at
+  build time only; three.js is not shipped in the game.
 
 Textures (Poly Haven, CC0 1.0 - https://polyhaven.com/license)
-  Dark Rock, Rock Ground, Medieval Wood, Rusty Metal 02
+  Rock Ground, Dark Rock, Medieval Wood - resized and graded for the terrain,
+  back wall and planks. The steel-plate texture is Dark Rock with painted seams
+  and rivets added for this project.
 
-3D models (CC0 1.0)
-  Poly Haven: Wine Barrel 01, Wooden Crate 01
-  Quaternius: Ultimate Modular Characters / outfits (peasant, ranger, head),
-              Universal Animation Library 1 & 2 (clips)
-              https://quaternius.com
+Props (original, modelled in Blender for this project, rendered with Cycles)
+  Lift cage and headframe, hatch, timber posts and caps, planks, Davy lamp, torch,
+  mine cart, rocks, pickaxe, mallet. Scripts: source/blender/render_sprites.py
+  (the models were built by the build-2 script build_props.py, kept alongside).
 
 Fonts
   Cinzel and Cinzel Decorative by Natanael Gama - SIL Open Font License 1.1
 
-Modelled in Blender for this project (original; textures are the CC0 Poly Haven
-  sets above, resized and graded): timbers, planks, rails, sleepers, mine cart,
-  Davy lamp, torch, pickaxe, mallet, lift cage and gate, rock set with baked
-  normal/AO atlas. Script: source/blender/build_props.py
-
-Generated in-game (original, no third-party assets)
-  Cave terrain, helmets, torch brackets and stands, flare,
-  flames, smoke, dust, gas and shadow creatures are procedural geometry and shaders.
-  All audio is synthesized at runtime with WebAudio.
-  Toolbar icons are rendered at load time from the game's own 3D props.
-
+Audio: all synthesized at runtime with WebAudio (original).
 AI-generated art: none is used in this build.

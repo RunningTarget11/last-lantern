@@ -1,56 +1,48 @@
-LAST LANTERN - prototype (build 2: Blender asset pass)
-==================================
-A dark, Lemmings-style rescue game for mobile browsers and desktop.
-The mine has fallen. Trapped miners walk on their own. They follow light,
-and the darkness takes anyone left too long in shadow. Get the quota
-of miners to the exit lift before time runs out.
+LAST LANTERN - prototype, build 3 (side-on Lemmings-style rework)
+=================================================================
+Play: https://runningtarget11.github.io/last-lantern/   (?level=N opens level N)
 
-Play: open index.html (GitHub Pages serves it from the repo root).
-Everything is local, with no CDN. Three.js r170 is bundled in game.js,
-and textures, models and fonts are inlined in assets.js.
+A collapsed mine, shown side-on as a cutaway. Miners drop from a hatch and walk on
+their own: they turn at walls, fall off ledges, and die if they fall too far.
+Give them skills so enough of them reach the lift cage before time runs out.
+Darkness is the twist: an unlit miner in a dark seam is taken by the shadows.
 
-CONTROLS (one bottom bar)
-  Lantern (Foreman): tap the tunnel to walk the Foreman there; miners near
-                     his lamp follow. Tap a Blocker to release him.
-  Torch / Davy lamp: tap or drag into the tunnel to place one (limited count).
-                     Torches are open flame and ignite firedamp; Davy lamps are safe.
-  Digger:   tap a miner to dig straight down through rock or rubble (not granite).
-  Blocker:  tap a miner to make him stand and turn the crowd.
-  Shorer:   tap a miner; he props up the next weak roof before its cave-in timer.
-  Flare:    tap a miner to throw a flare ahead (bright, short, ignites gas
-            from a safe distance, banishes shadow creatures).
-  Speed 1x/2x/3x, Menu (pause, retry, level select, graphics quality).
-  Pan: drag empty space.  Zoom: pinch or mouse wheel.
-  Keys: 1-7 select tools, Space = pause, Esc = menu, arrows = pan.
-  URL options: ?level=N starts a level directly; ?q=low|med|high sets quality.
+SKILLS (bottom bar, limited counts per level)
+  1 Climber   permanent - scales vertical walls
+  2 Floater   permanent - opens a canvas sack and drifts down safely
+  3 Blaster   5-second fuse, blows a crater (not through steel)
+  4 Blocker   stands with arms out and turns others back (tap him again with
+              Blocker selected to release him, free)
+  5 Builder   lays 12 timber planks as a rising stair
+  6 Basher    tunnels horizontally
+  7 Miner     tunnels diagonally downward
+  8 Digger    digs straight down
+  9 Lamp      permanent - carries a lantern that lights the way for nearby miners
+  0 Torch     plant a torch on the ground (tap the spot)
+  Riveted steel plate cannot be dug, bashed, mined or blasted.
+
+CONTROLS
+  Touch: tap a skill, then tap a miner (generous hit area; the targeted miner gets
+         brass corner brackets). Drag to pan, pinch to zoom, tap the minimap to jump.
+  Desktop: click skill / miner, keys 1-0 pick skills, wheel zooms, drag or arrows pan,
+         P/Space pause, F fast-forward, N nuke (press twice), -/+ release rate, Esc menu.
+  Bar: release rate -/+, pause, fast-forward (3x), nuke, menu. HUD: out, saved/quota, timer.
+  Works in portrait and landscape.
 
 LEVELS
-  1 The Lamp Room   - tutorial: lead with the lantern, place torches. Quota 7/10.
-  2 Old Workings    - dig down past a pit, hold the line with blockers. Quota 8/12.
-  3 Rotten Timbers  - timed cave-ins; shore the roof before it falls. Quota 9/14.
-  4 Firedamp        - gas pockets ignite near open flame; blast the rubble wall or
-                      go around with safe lamps. Quota 9/14.
-  5 The Hollow      - shadow creatures move only in the dark; a cavern, a granite
-                      shelf and a late cave-in. Quota 10/16.
-  Stars: thresholds per level are in source/src/levels.js (e.g. L1: 7/9/10). Best stars are
-  stored in localStorage.
+  1 Into the Dark   - Digger only. Dig through the floor to reach the lower gallery.
+  2 Sack and Rope   - Climber + Floater. Climb a rock rib, float down the far side.
+  3 Mind the Gap    - Builder + Blocker. Bridge a void, hold the crowd back while you build.
+  4 Hard Rock       - Basher + Miner (+Blocker). Bash pillars, mine down past steel.
+  5 The Dark Seam   - Everything + Lamp/Torch. Light a shadowed seam, bash, bridge, dig to the lift.
+  All five are solved by the scripted test (source/tests/solve.mjs): 20/20, 20/20, 25/25,
+  30/30, 36/40. Doing nothing saves 0 on every level; L5 without torches saves 0.
 
-SOURCE
-  source/ holds the unbundled modules (sim, renderer, levels), the build scripts
-  and the headless tests. Rebuild with source/build.sh (needs three, esbuild).
-  tests/solve.mjs plays scripted solutions for all five levels in Node.
-
-BLENDER ASSETS (build 2)
-  source/blender/build_props.py is a headless Blender 5.3 script (CPU/Cycles):
-    /opt/blender/blender -b --factory-startup -P source/blender/build_props.py
-  It models the mine props, bakes ambient occlusion into vertex colours, bakes a
-  high-poly -> low-poly normal map plus albedo*AO atlas for the rocks, and exports
-  one optimized GLB (ll_props.glb, ~24k triangles total, 512px textures, ~1.5 MB).
-  The game loads it from assets.js. If it's missing, the procedural fallbacks are used.
-  From Blender: timber posts and caps, lagging planks, rails (real flat-bottom
-  profile), sleepers with spikes, riveted mine cart with spoked flanged wheels and an
-  ore load, Davy lamp (brass, glass, wire gauze), tar-rag torch, pickaxe, mallet,
-  exit lift cage with sheave and gate, and 3 sculpted rock variants (rubble and
-  floor scatter).
-  Still procedural in three.js: cave terrain, torch brackets and stands, flare,
-  flames, smoke, gas and creatures.
+TECH
+  Deterministic simulation on a destructible per-pixel terrain mask (30 ticks/s).
+  Canvas 2D renderer: painted terrain from CC0 photo textures drawn through the mask with
+  depth shading and lit rims, parallax back wall, a multiply light buffer with real light
+  radii, additive flames, particles. Miners are pre-rendered sprite sheets of rigged 3D
+  characters (side view); props are Blender Cycles renders. No pixel art.
+  Source: source/ (esbuild; build.sh, build-assets.mjs, bake/ for sprite baking,
+  blender/render_sprites.py for prop renders).
